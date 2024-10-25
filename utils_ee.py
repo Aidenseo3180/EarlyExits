@@ -262,8 +262,7 @@ def get_intermediate_classifiers_adaptive(model, final_classifier,
     else:
         final_classifier = IntermediateBranch(preprocessing=seq,
                                               classifier=cl)
-    print("-------branch---------\n")
-    print(final_classifier)
+
     predictors.append(final_classifier)
     outputs_ee = outputs[:-1]
     for i, o in enumerate(reversed(outputs_ee)):
@@ -630,8 +629,6 @@ def get_eenn(subnet, subnet_path, res, n_classes, get_binaries=False):
             else:
                 ee_config.append(1)
     
-    print("subnet.blocks: \n")
-    print(subnet.blocks)
     backbone = EEMobileNetV3(subnet.first_conv, subnet.blocks, ee_config, config['d'])
     final_classifier = FinalClassifier(subnet.final_expand_layer, subnet.feature_mix_layer, subnet.classifier)
     img_size = (3, res, res)
