@@ -202,12 +202,32 @@ if __name__ == "__main__":
     results={}
     results['backbone_top1'] = np.round((1-top1)*100,2)
 
+    print("--------Trained Backbone---------\n")
+    print(backbone)
+
     #Create the EENN on top of the trained backbone
 
     if 'mobilenetv3' in args.model:
         backbone, classifiers, epsilon = get_eenn(subnet=backbone, subnet_path=args.model_path, res=res, n_classes=n_classes, get_binaries=get_binaries)
     else:
         backbone, classifiers, epsilon = get_ee_efficientnet(model=backbone, img_size=res, n_classes=n_classes, get_binaries=get_binaries)
+
+    print("--------Backbone with EENN------------\n")
+    print(backbone)
+
+    print("--------size of backbone----------\n")
+    model = models.resnet18()
+    param_size = 0
+    buffer_size = 0
+    for param in model.parameters():
+        param_size += param.nelement() * param.element_size()
+
+    for buffer in model.buffers():
+        buffer_size += buffer.nelement() * buffer.element_size()
+
+    size_all_mb = (param_size + buffer_size) / 1024**2
+    print('Size: {:.3f} MB'.format(size_all_mb))
+    print("----------------------\n")
 
     # MODEL COST PROFILING
 
@@ -618,6 +638,9 @@ if __name__ == "__main__":
     #log.info('Branches scores on exiting samples: {}'.format(best_scores))
     #log.info('Exit ratios: {}'.format(weights))
     #log.info('Average MACS: {:.2f}'.format(avg_macs))
+
+    print("------------results-------------\n")
+    print(results)
     
     with open(save_path, 'w') as handle:
             json.dump(results, handle)
